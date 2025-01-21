@@ -146,7 +146,10 @@ class Installer:
             return
         msg = "Installing ansible-dev-tools."
         self._output.debug(msg)
-        command = f"{self._config.venv_interpreter} -m pip install ansible-dev-tools"
+        if self._config.args.seed_version != "":
+            command = f"{self._config.venv_interpreter} -m pip install ansible-dev-tools=={self._config.args.seed_version}"
+        else:
+            command = f"{self._config.venv_interpreter} -m pip install ansible-dev-tools"
         try:
             subprocess_run(
                 command=command,

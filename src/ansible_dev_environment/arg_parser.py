@@ -203,6 +203,13 @@ def parse() -> argparse.Namespace:
         help="Install seed packages inside the virtual environment (ansible-dev-tools).",
     )
 
+    install.add_argument(
+        "--seed-version",
+        dest="seed_version",
+        default="",
+        help="Version of the seed package (ansible-dev-tools) to install inside the virtual environment.",
+    )
+
     _uninstall = subparsers.add_parser(
         "uninstall",
         formatter_class=CustomHelpFormatter,
