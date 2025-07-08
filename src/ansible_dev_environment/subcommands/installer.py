@@ -5,6 +5,7 @@ from __future__ import annotations
 import re
 import shutil
 import subprocess
+import os
 
 from pathlib import Path
 from typing import TYPE_CHECKING
@@ -229,6 +230,9 @@ class Installer:
         )
         env = {
             "ANSIBLE_GALAXY_COLLECTIONS_PATH_WARNING": str(self._config.args.verbose),
+            # Ensure SSL_CERT_FILE is passed down to collection install subprocess call
+            # Relevant when a HTTP proxy has a custom CA
+            "SSL_CERT_FILE": str(os.environ.get("SSL_CERT_FILE", None)),
         }
         msg = "Running ansible-galaxy to install non-local collection and it's dependencies."
         self._output.debug(msg)
@@ -269,6 +273,10 @@ class Installer:
                 else:
                     shutil.rmtree(cpath)
 
+        env = {
+            "SSL_CERT_FILE": str(os.environ.get("SSL_CERT_FILE", None)),
+        }
+
         command = (
             f"{self._config.galaxy_bin} collection"
             f" install -r {self._config.args.requirement}"
@@ -279,6 +287,7 @@ class Installer:
         try:
             proc = subprocess_run(
                 command=command,
+                env=env,
                 verbose=self._config.args.verbose,
                 msg=work,
                 output=self._output,
